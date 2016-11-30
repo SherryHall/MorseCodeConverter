@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace MorseCodeConverter
 {
+
 	class Translator
 	{
 		public Dictionary<char, string> AlphaToCode = new Dictionary<char, string>();
 		public Dictionary<string, char> CodeToAlpha = new Dictionary<string, char>();
 		string keyFile = "MorseCode.csv";
+		string transFile = "Translations.csv";
 
 
 		public Translator()
@@ -33,7 +35,7 @@ namespace MorseCodeConverter
 			}
 			else
 			{
-				Console.WriteLine("MorseCode.txt is missing so dictionary could not be built");
+				Console.WriteLine("MorseCode.csv is missing so dictionary could not be built");
 				Console.ReadLine();
 			}
 		}
@@ -60,13 +62,47 @@ namespace MorseCodeConverter
 			return codeString;
 		}
 
+		public string DecodeIt(string morseCode)
+		{
+			// Translate morse code into message. letter is a string because morse code has multiple dashes and dots per letter 
+			string message = String.Empty;
+			char value;
+			var words = morseCode.Split('/');
+			foreach (string word in words)
+			{
+				var letters = word.Split( ' ');
+				foreach (string letter in letters)
+				{
+					if (CodeToAlpha.TryGetValue(letter, out value))
+					{
+						message += value;
+					}
+				}
+				// Add space to separate the words in the message
+				message +=  ' ';
+			}
+			return message;
+		}
 		public void SaveTranslation (string message, string codeString)
 		{
-			string transFile = "Translations.csv";
-			//using (var translations = new StreamWriter(transFile))
+			// Save the entered message and resulting morse code translation to a file
 			using (var translations = File.AppendText(transFile))
 			{
 				translations.WriteLine($"{message},{codeString}");
+			}
+		}
+
+		public void DisplayAllPrior()
+		{
+			using (var translations = new StreamReader(transFile))
+			{
+				// while there are lines remaining in the file, read the line, split into message and morse code, display to console
+				Console.WriteLine();
+				while (translations.Peek() > 0)
+				{
+					var line = translations.ReadLine().Split(',');
+					Console.WriteLine($"Message: {line[0]}      Morse Code: {line[1]}");
+				}
 			}
 		}
 	}
