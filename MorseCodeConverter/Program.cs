@@ -17,16 +17,21 @@ namespace MorseCodeConverter
 			
 			while(keepGoing)
 			{
-				Console.WriteLine("Do you want to translate a message to morse code (Y/N)?");
+				Console.Write("Do you want to translate a message to morse code (Y/N)?  ");
 				char answer = Console.ReadKey().KeyChar;
 				if (answer.Equals('Y') | answer.Equals('y'))
 				{
-
+					Console.WriteLine("\nEnter the message to encode: (Alphanumberic characters only!)");
+					var message = Console.ReadLine();
+					var codeString = currTranslate.EncodeIt(message);
+					Console.WriteLine($"The morse code is {codeString}");
+					currTranslate.SaveTranslation(message, codeString);
+				}
+				else
+				{
+					keepGoing = false;
 				}
 			}
-			
-			Console.ReadLine();
-
 		}
 	}
 }
